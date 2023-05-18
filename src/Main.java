@@ -18,7 +18,8 @@ public class Main {
         tree.put(4, 2);
         tree.put(7, 3);
         tree.put(2, 4);
-
-
+        System.out.println(tree.get(4));
+        tree.remove(7);
+        System.out.println(tree.get(7));
     }
 }

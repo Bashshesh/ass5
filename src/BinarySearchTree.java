@@ -49,16 +49,16 @@ public class BinarySearchTree <K extends Comparable<K>, V> implements Iterable<K
         return current.value;
     }
 
-    public void delete(K key){
-        root=delete(root, key);
+    public void remove(K key){
+        root=remove(root, key);
     }
 
-    private Node<K, V> delete(Node<K, V> current, K key) {
+    private Node<K, V> remove(Node<K, V> current, K key) {
         if(current == null) return current;
         if(key.compareTo(current.key)<0) {
-            current.left = delete(current.left, key);
+            current.left = remove(current.left, key);
         } else if(key.compareTo(current.key)>0) {
-            current.right = delete(current.right, key);
+            current.right = remove(current.right, key);
         } else {
             if(current.left == null || current.right == null) {
                 Node<K, V> temp = current.left != null ? current.left : current.right;
@@ -71,7 +71,7 @@ public class BinarySearchTree <K extends Comparable<K>, V> implements Iterable<K
                 Node successor = getSuccessor(current);
                 current.value = (V) successor.value;
 
-                current.right = delete(current.right, (K) successor.key);
+                current.right = remove(current.right, (K) successor.key);
                 return current;
             }
         }
