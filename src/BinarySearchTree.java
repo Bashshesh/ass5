@@ -1,21 +1,25 @@
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Stack;
-
+//exepctions and so one
 public class BinarySearchTree<K extends Comparable<K>, V> implements Iterable<BinarySearchTree.elem<K, V>> {
     private Node root;
     private int size;
 
     private class Node {
         private K key;
+        //private key
         private V value;
         private Node left;
+        //we have private left
         private Node right;
+        //and right Nodes childerns
 
         public Node(K key, V value) {
             this.key = key;
             this.value = value;
         }
+        //getting all this keys
     }
 
     public static class elem<K, V> {
@@ -36,6 +40,7 @@ public class BinarySearchTree<K extends Comparable<K>, V> implements Iterable<Bi
             put(root, key, value);
         }
     }
+    //puting some values in BST
 
     private void put(Node node, K key, V value) {
         int cmp = key.compareTo(node.key);
@@ -43,13 +48,16 @@ public class BinarySearchTree<K extends Comparable<K>, V> implements Iterable<Bi
             if (node.left == null) {
                 node.left = new Node(key, value);
                 size++;
+                //cheking is that node is empty
             } else {
                 put(node.left, key, value);
+                //else we put it
             }
         } else if (cmp > 0) {
             if (node.right == null) {
                 node.right = new Node(key, value);
                 size++;
+                //same but to right childern
             } else {
                 put(node.right, key, value);
             }
@@ -62,6 +70,7 @@ public class BinarySearchTree<K extends Comparable<K>, V> implements Iterable<Bi
     public V get(K key) {
         Node node = getNode(root, key);
         return (node != null) ? node.value : null;
+        //get the value if BST
     }
 
     private Node getNode(Node node, K key) {
@@ -76,9 +85,11 @@ public class BinarySearchTree<K extends Comparable<K>, V> implements Iterable<Bi
         } else {
             return node;
         }
+        //this is find easliy, iw that greater we check the right node and so one
     }
     public void remove(K key) {
         root = deleteNode(root, key);
+        //removing element
     }
 
     private Node deleteNode(Node node, K key) {
@@ -151,5 +162,42 @@ public class BinarySearchTree<K extends Comparable<K>, V> implements Iterable<Bi
 
             return new elem<>(node.key, node.value);
         }
+        public Iterator<elem<K, V>> iterator() {
+            return new BSTIterator();
+        }
+
+        public Iterable<K> keys() {
+            return new KeyIterable();
+        }
+
+        private class KeyIterable implements Iterable<K> {
+            @Override
+            public Iterator<K> iterator() {
+                return new KeyIterator();
+            }
+        }
+
+        private class KeyIterator implements Iterator<K> {
+            private Iterator<elem<K, V>> entryIterator;
+
+            public KeyIterator() {
+                entryIterator = BinarySearchTree.this.iterator();
+            }
+
+            @Override
+            public boolean hasNext() {
+                return entryIterator.hasNext();
+            }
+
+            @Override
+            public K next() {
+                if (!hasNext()) {
+                    throw new NoSuchElementException();
+                }
+
+                return entryIterator.next().key;
+            }
+        }
+
     }
 }

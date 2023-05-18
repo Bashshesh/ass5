@@ -29,7 +29,7 @@ public class Main {
         System.out.println(tree.size());
         tree.remove(4);
         System.out.println(tree.get(4));
-
+        System.out.println(tree.size());
 
     }
 }
