@@ -77,6 +77,42 @@ public class BinarySearchTree<K extends Comparable<K>, V> implements Iterable<Bi
             return node;
         }
     }
+    public void remove(K key) {
+        root = deleteNode(root, key);
+    }
+
+    private Node deleteNode(Node node, K key) {
+        if (node == null) {
+            return null;
+        }
+
+        int cmp = key.compareTo(node.key);
+        if (cmp < 0) {
+            node.left = deleteNode(node.left, key);
+        } else if (cmp > 0) {
+            node.right = deleteNode(node.right, key);
+        } else {
+            if (node.left == null) {
+                return node.right;
+            } else if (node.right == null) {
+                return node.left;
+            }
+
+            Node successor = findMinNode(node.right);
+            node.key = successor.key;
+            node.value = successor.value;
+            node.right = deleteNode(node.right, successor.key);
+        }
+
+        return node;
+        size--;
+    }
+    private Node findMinNode(Node node) {
+        while (node.left != null) {
+            node = node.left;
+        }
+        return node;
+    }
 
     public int size() {
         return size;
