@@ -103,9 +103,7 @@ public class BinarySearchTree<K extends Comparable<K>, V> implements Iterable<Bi
             node.value = successor.value;
             node.right = deleteNode(node.right, successor.key);
         }
-
         return node;
-        size--;
     }
     private Node findMinNode(Node node) {
         while (node.left != null) {

@@ -22,14 +22,14 @@ public class Main {
         tree.put(3, "5");
         tree.put(7, "6");
         tree.put(9, "7");
-        System.out.println(tree.get(5));
-        System.out.println(tree.size());
-        tree.remove(4);
-        System.out.println(tree.size());
-
-
         for (BinarySearchTree.elem<Integer, String> elem : tree) {
             System.out.println("key is " + elem.key + " and value is " + elem.value);
         }
+        System.out.println(tree.get(5));
+        System.out.println(tree.size());
+        tree.remove(4);
+        System.out.println(tree.get(4));
+
+
     }
 }
