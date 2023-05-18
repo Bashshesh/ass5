@@ -1,5 +1,6 @@
-public class BinaryTree {
+//just ignore it, it is  default BTS without iterators
 
+public class BinaryTree {
     static class Node{
         int data;
         Node left, right;
