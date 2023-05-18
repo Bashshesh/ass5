@@ -1,134 +1,105 @@
 import java.util.Iterator;
-import java.util.NoSuchElementException;
-import java.util.Stack;
+import java.util.LinkedList;
+import java.util.Queue;
 
-public class BinarySearchTree<K extends Comparable<K>, V> implements Iterable<Entry<K, V>> {
-
-    private Node root;
-    private int size;
-
-    private class Node {
+public class BinarySearchTree <K extends Comparable<K>, V> implements Iterable<K>{
+    private class Node <K extends Comparable<K>, V>{
         private K key;
         private V value;
-        private Node left;
-        private Node right;
-
-        public Node(K key, V value) {
-            this.key = key;
-            this.value = value;
-            this.left = null;
-            this.right = null;
+        private Node left, right;
+        public Node(K key, V value){
+            this.key=key;
+            this.value=value;
         }
     }
 
-    private class Entry<K, V> {
-        private K key;
-        private V value;
+    private Node<K, V> root;
+    private int length;
 
-        public Entry(K key, V value) {
-            this.key = key;
-            this.value = value;
-        }
+    public void put(K key, V value){
+        Node<K, V> newNode=new Node(key, value);
+        root=put(root, newNode);
     }
 
-    public void put(K key, V value) {
-        if (key == null)
-            throw new IllegalArgumentException("Key cannot be null.");
-
-        root = put(root, key, value);
-    }
-
-    private Node put(Node node, K key, V value) {
-        if (node == null) {
-            size++;
-            return new Node(key, value);
-        }
-
-        int cmp = key.compareTo(node.key);
-        if (cmp < 0)
-            node.left = put(node.left, key, value);
-        else if (cmp > 0)
-            node.right = put(node.right, key, value);
-        else
-            node.value = value;
-
-        return node;
-    }
-
-    public V get(K key) {
-        if (key == null)
-            throw new IllegalArgumentException("Key cannot be null.");
-
-        Node node = get(root, key);
-        return node != null ? node.value : null;
-    }
-
-    private Node get(Node node, K key) {
-        if (node == null)
-            return null;
-
-        int cmp = key.compareTo(node.key);
-        if (cmp < 0)
-            return get(node.left, key);
-        else if (cmp > 0)
-            return get(node.right, key);
-        else
+    private Node<K, V> put(Node<K, V> current, Node<K, V> node){
+        if(current==null){
             return node;
-    }
-
-    public boolean contains(K key) {
-        return get(key) != null;
-    }
-
-    public int size() {
-        return size;
-    }
-
-    public Iterator<Entry<K, V>> iterator() {
-        return new InOrderIterator();
-    }
-
-    private class InOrderIterator implements Iterator<Entry<K, V>> {
-        private Stack<Node> stack;
-
-        public InOrderIterator() {
-            stack = new Stack<>();
-            pushAll(root);
         }
+        if(node.key.compareTo(current.key) > 0){
+            current.right=put(current.right, node);
+        }
+        else if(node.key.compareTo(current.key) < 0){
+            current.left=put(current.left, node);
+        }
+        length++;
+        return current;
+    }
 
-        private void pushAll(Node node) {
-            while (node != null) {
-                stack.push(node);
-                node = node.left;
+    public V get(K key){
+        return get(root, key);
+    }
+
+    private V get(Node<K, V> current, K key){
+        if (current==null) return null;
+        if(key.compareTo(current.key) > 0){
+            current.value = (V) get(current.right, key);
+        }else if(key.compareTo(current.key) < 0){
+            current.value = (V) get(current.left, key);
+        }
+        return current.value;
+    }
+
+    public void delete(K key){
+        root=delete(root, key);
+    }
+
+    private Node<K, V> delete(Node<K, V> current, K key) {
+        if(current == null) return current;
+        if(key.compareTo(current.key)<0) {
+            current.left = delete(current.left, key);
+        } else if(key.compareTo(current.key)>0) {
+            current.right = delete(current.right, key);
+        } else {
+            if(current.left == null || current.right == null) {
+                Node<K, V> temp = current.left != null ? current.left : current.right;
+                if(temp == null) {
+                    return null;
+                } else {
+                    return temp;
+                }
+            } else {
+                Node successor = getSuccessor(current);
+                current.value = (V) successor.value;
+
+                current.right = delete(current.right, (K) successor.key);
+                return current;
             }
         }
-
-        public boolean hasNext() {
-            return !stack.isEmpty();
-        }
-
-        public Entry<K, V> next() {
-            if (!hasNext())
-                throw new NoSuchElementException();
-
-            Node node = stack.pop();
-            pushAll(node.right);
-
-            return new Entry<>(node.key, node.value);
-        }
-
-        public void remove() {
-            throw new UnsupportedOperationException();
-        }
-
-        BinarySearchTree<Integer, String> tree = new BinarySearchTree<>();
-
-        public void showAll(){
-            for (BinarySearchTree.Entry<Integer, String> entry : tree) {
-                System.out.println("Key:" + entry.key + " Value:" + entry.value);
-            }
-        }
+        return current;
     }
 
+    private Node<K, V> getSuccessor(Node<K, V> node) {
+        if(node == null) {
+            return null;
+        }
+        Node temp = node.right;
+        while(temp.left != null) {
+            temp = temp.left;
+        }
+        return temp;
+    }
 
+    @Override
+    public Iterator<K> iterator() {
+        Queue<K> q= new LinkedList<>();
+        inorder(root, q);
+        return q.iterator();
+    }
+
+    private void inorder(Node<K, V> x, Queue<K> q){
+        if(x==null) return;
+        inorder(x.left, q);
+        q.add(x.key);
+        inorder(x.right, q);
+    }
 }
