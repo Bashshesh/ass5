@@ -1,105 +1,121 @@
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.Queue;
+import java.util.NoSuchElementException;
+import java.util.Stack;
 
-public class BinarySearchTree <K extends Comparable<K>, V> implements Iterable<K>{
-    private class Node <K extends Comparable<K>, V>{
-        private K key;
-        private V value;
-        private Node left, right;
-        public Node(K key, V value){
-            this.key=key;
-            this.value=value;
-        }
-    }
+public class BinarySearchTree<K extends Comparable<K>, V> implements Iterable<BinarySearchTree.elem<K, V>> {
+    private Node root;
+    private int size;
 
-    private Node<K, V> root;
-    private int length;
-
-    public void put(K key, V value){
-        Node<K, V> newNode=new Node(key, value);
-        root=put(root, newNode);
-    }
-
-    private Node<K, V> put(Node<K, V> current, Node<K, V> node){
-        if(current==null){
-            return node;
-        }
-        if(node.key.compareTo(current.key) > 0){
-            current.right=put(current.right, node);
-        }
-        else if(node.key.compareTo(current.key) < 0){
-            current.left=put(current.left, node);
-        }
-        length++;
-        return current;
-    }
-
-    public V get(K key){
-        return get(root, key);
-    }
-
-    private V get(Node<K, V> current, K key){
-        if (current==null) return null;
-        if(key.compareTo(current.key) > 0){
-            current.value = (V) get(current.right, key);
-        }else if(key.compareTo(current.key) < 0){
-            current.value = (V) get(current.left, key);
-        }
-        return current.value;
-    }
-
-    public void remove(K key){
-        root=remove(root, key);
-    }
-
-    private Node<K, V> remove(Node<K, V> current, K key) {
-        if(current == null) return current;
-        if(key.compareTo(current.key)<0) {
-            current.left = remove(current.left, key);
-        } else if(key.compareTo(current.key)>0) {
-            current.right = remove(current.right, key);
+    public void put(K key, V value) {
+        if (root == null) {
+            root = new Node(key, value);
+            size = 1;
         } else {
-            if(current.left == null || current.right == null) {
-                Node<K, V> temp = current.left != null ? current.left : current.right;
-                if(temp == null) {
-                    return null;
-                } else {
-                    return temp;
-                }
-            } else {
-                Node successor = getSuccessor(current);
-                current.value = (V) successor.value;
-
-                current.right = remove(current.right, (K) successor.key);
-                return current;
-            }
+            put(root, key, value);
         }
-        return current;
     }
 
-    private Node<K, V> getSuccessor(Node<K, V> node) {
-        if(node == null) {
+    private void put(Node node, K key, V value) {
+        int cmp = key.compareTo(node.key);
+        if (cmp < 0) {
+            if (node.left == null) {
+                node.left = new Node(key, value);
+                size++;
+            } else {
+                put(node.left, key, value);
+            }
+        } else if (cmp > 0) {
+            if (node.right == null) {
+                node.right = new Node(key, value);
+                size++;
+            } else {
+                put(node.right, key, value);
+            }
+        } else {
+            // Update the value if the key already exists
+            node.value = value;
+        }
+    }
+
+    public V get(K key) {
+        Node node = getNode(root, key);
+        return (node != null) ? node.value : null;
+    }
+
+    private Node getNode(Node node, K key) {
+        if (node == null) {
             return null;
         }
-        Node temp = node.right;
-        while(temp.left != null) {
-            temp = temp.left;
+        int cmp = key.compareTo(node.key);
+        if (cmp < 0) {
+            return getNode(node.left, key);
+        } else if (cmp > 0) {
+            return getNode(node.right, key);
+        } else {
+            return node;
         }
-        return temp;
+    }
+
+    public int size() {
+        return size;
     }
 
     @Override
-    public Iterator<K> iterator() {
-        Queue<K> q= new LinkedList<>();
-        inorder(root, q);
-        return q.iterator();
+    public Iterator<elem<K, V>> iterator() {
+        return new BSTIterator();
     }
 
-    private void inorder(Node<K, V> x, Queue<K> q){
-        if(x==null) return;
-        inorder(x.left, q);
-        q.add(x.key);
-        inorder(x.right, q);
+    private class BSTIterator implements Iterator<elem<K, V>> {
+        private Node current;
+        private Stack<Node> stack;
+
+        public BSTIterator() {
+            stack = new Stack<>();
+            current = root;
+        }
+
+        @Override
+        public boolean hasNext() {
+            return (current != null || !stack.isEmpty());
+        }
+
+        @Override
+        public elem<K, V> next() {
+            while (current != null) {
+                stack.push(current);
+                current = current.left;
+            }
+
+            if (stack.isEmpty()) {
+                throw new NoSuchElementException();
+            }
+
+            Node node = stack.pop();
+            current = node.right;
+
+            return new elem<>(node.key, node.value);
+        }
+    }
+
+    private class Node {
+        private K key;
+        private V value;
+        private Node left;
+        private Node right;
+
+        public Node(K key, V value) {
+            this.key = key;
+            this.value = value;
+        }
+    }
+
+    public static class elem<K, V> {
+        public K key;
+        public V value;
+
+        public elem(K key, V value) {
+            this.key = key;
+            this.value = value;
+        }
     }
 }

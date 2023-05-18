@@ -13,13 +13,18 @@ public class Main {
         tree.getValue(7);*/
         // ignore it, it is just default BST without iterators, but i do that task which you give in a class
 
-        BinarySearchTree<Integer, Integer> tree=new BinarySearchTree<>();
-        tree.put(1, 1);
-        tree.put(4, 2);
-        tree.put(7, 3);
-        tree.put(2, 4);
-        System.out.println(tree.get(4));
-        tree.remove(7);
-        System.out.println(tree.get(7));
+        BinarySearchTree<Integer, String> tree = new BinarySearchTree<>();
+
+        tree.put(5, "1");
+        tree.put(2, "2");
+        tree.put(8, "3");
+        tree.put(1, "4");
+        tree.put(3, "5");
+        tree.put(7, "6");
+        tree.put(9, "7");
+
+        for (BinarySearchTree.elem<Integer, String> elem : tree) {
+            System.out.println("key is " + elem.key + " and value is " + elem.value);
+        }
     }
 }
