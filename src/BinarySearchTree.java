@@ -124,7 +124,7 @@ public class BinarySearchTree<K extends Comparable<K>, V> implements Iterable<En
         BinarySearchTree<Integer, String> tree = new BinarySearchTree<>();
 
         public void showAll(){
-            for (BinarySearchTree.Entry<Integer, String> entry : tree) {
+            for (Entry<Integer, String> entry : tree) {
                 System.out.println("Key:" + entry.key + " Value:" + entry.value);
             }
         }
